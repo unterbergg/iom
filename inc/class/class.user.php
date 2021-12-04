@@ -21,10 +21,9 @@ class HOS_User extends WP_User
     public function __construct($user_id = false)
     {
 
-        if (!$user_id) {
+        if ( !$user_id || !is_numeric($user_id) ) {
             throw new Exception(__('You must provide a $user_id to initiate a HOS_User object.', 'healthos'));
         }
-
         parent::__construct($user_id);
 
     }

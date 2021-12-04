@@ -85,13 +85,11 @@ add_action( 'rest_api_init', function () {
             }
 
             try {
+                // TODO: review this logic
                 $user = healthos_get_user( $data['id'] );
-                if( ! $user ) {
-                    return new WP_Error( 'bad_id' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
-                }
                 $response = $user->get_user_data();
             } catch( Exception $e ) {
-                return new WP_Error( 'bad_request' , $e->getMessage() , array( 'status' => 500 ));
+                return new WP_Error( 'bad_id' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
             }
 
             if ( is_array( $response ) ) {

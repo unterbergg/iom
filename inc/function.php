@@ -1,5 +1,5 @@
 <?php
-define( 'ROUTE_NAMESPACE', apply_filters( 'healthos_route_namespace' , 'healthos/v1' ));
+define( 'ROUTE_NAMESPACE', apply_filters( 'healthos_route_namespace' , 'healthos/v2' ));
 
 /**
  *
