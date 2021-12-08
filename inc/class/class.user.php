@@ -185,9 +185,25 @@ class HOS_User extends WP_User
 
     }
 
+    /**
+     *
+     * Get user's email
+     *
+     * @return string $user_email
+     *
+     **/
+
     private function get_email_address() {
         return $this->user_email;
     }
+
+    /**
+     *
+     * Get user's data
+     *
+     * @return array $userdata
+     *
+     **/
 
     public function get_user_data() {
         $userdata = $this->to_array();
@@ -197,17 +213,44 @@ class HOS_User extends WP_User
         return $userdata;
     }
 
+    /**
+     *
+     * Get user's password
+     *
+     * @return array user_pass & ID
+     *
+     **/
+
     public function get_user_pass() {
         $userdata = $this->to_array();
         return ['user_pass' => $userdata['user_pass'], 'ID' => $this->ID];
     }
 
+    /**
+     *
+     * Get user's meta
+     *
+     * @return array $usermeta
+     *
+     **/
+
     private function get_user_meta() {
         $usermeta = get_user_meta( $this->ID );
+
         unset( $usermeta['session_tokens']);
-        $usermeta['date_format'] = $this->get_formated_field($usermeta['date_format'][0], $this->dateformat_list);
-        $usermeta['gender'] = $this->get_formated_field($usermeta['gender'][0], $this->gender_list);
-        $usermeta['timezonez'] = $this->get_formated_field($usermeta['timezone'][0], $this->timezone_list);
+        unset( $usermeta['rich_editing']);
+        unset( $usermeta['syntax_highlighting']);
+        unset( $usermeta['comment_shortcuts']);
+        unset( $usermeta['admin_color']);
+        unset( $usermeta['use_ssl']);
+        unset( $usermeta['show_admin_bar_front']);
+        unset( $usermeta['locale']);
+        unset( $usermeta['wp_user_level']);
+        unset( $usermeta['default_password_nag']);
+
+        $usermeta['date_format'] = $this->get_formatted_field($usermeta['date_format'][0], $this->dateformat_list);
+        $usermeta['gender'] = $this->get_formatted_field($usermeta['gender'][0], $this->gender_list);
+        $usermeta['timezonez'] = $this->get_formatted_field($usermeta['timezone'][0], $this->timezone_list);
         $usermeta['messenger'] = $this->get_multiple_field($usermeta['messenger'][0], $this->messenger_list);
 
         if ($usermeta['notification_switcher']) {
@@ -217,11 +260,21 @@ class HOS_User extends WP_User
         }
 
         $usermeta['vitals'] = $this->get_vitals( $usermeta['units'][0], $usermeta['weight'][0], $usermeta['height'][0]);
-//        unset($usermeta['weight']);
-//        unset($usermeta['height']);
+        unset($usermeta['weight']);
+        unset($usermeta['height']);
 
         return $usermeta;
     }
+
+    /**
+     *
+     * Update user's data
+     *
+     * @return obj a HOS_User user object
+     *
+     *
+     * @throws Exception
+     **/
 
     // TODO: Review access modifiers
     public function update_user_data( $userdata ) {
@@ -230,7 +283,18 @@ class HOS_User extends WP_User
         return healthos_get_user($user_id);
     }
 
-    public function get_formated_field($usermeta, $field) {
+    /**
+     *
+     * Get formatted value of user's meta field
+     *
+     * @param $usermeta array value of the field
+     * @param $field array key of the field
+     * @return array $result
+     *
+     **/
+
+    // TODO: Review access modifiers. Add function's return type.
+    public function get_formatted_field($usermeta, $field) {
         $result = [];
         foreach ($field as $value) {
             $result[$value] = $value == $usermeta;
@@ -238,6 +302,17 @@ class HOS_User extends WP_User
         return $result;
     }
 
+    /**
+     *
+     * Get multiple values of user's meta field
+     *
+     * @param $usermeta array value of the field
+     * @param $field array key of the field
+     * @return array $result
+     *
+     **/
+
+    // TODO: Review access modifiers. Add function's return type.
     public function get_multiple_field($usermeta, $field) {
         $result = $field;
         $usermeta = json_decode($usermeta, true);
@@ -249,6 +324,17 @@ class HOS_User extends WP_User
         return $result;
     }
 
+    /**
+     *
+     * Get user's notifications
+     *
+     * @param $usermeta array value of the notification field
+     * @param $flag bool turn on/turn off notifications
+     * @return array $result
+     *
+     **/
+
+    // TODO: Review access modifiers. Add function's return type.
     public function get_notifications($usermeta, $flag = true) {
         $result = $this->notification_list;
         if (!$flag) {
@@ -268,6 +354,18 @@ class HOS_User extends WP_User
         return $result;
     }
 
+    /**
+     *
+     * Get user's vitals
+     *
+     * @param $units string units of measurement
+     * @param $weight string JSON weight in both units of measurement
+     * @param $height string JSON height in both units of measurement
+     * @return array $result
+     *
+     **/
+
+    // TODO: Review access modifiers. Add function's return type.
     public function get_vitals($units, $weight = null, $height= null) {
         $result = $this->vitals_list;
         $result['units'] = $units;
