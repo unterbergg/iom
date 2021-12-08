@@ -16,26 +16,21 @@ function healthos_get_user( $user_id = false ) {
     return new HOS_User( $user_id );
 }
 
-
 /**
  *
- * Get a user meta
+ * Convert inches to cm
+ *s
+ * @param $height double the height in inches
+ * @return array
  *
- * @param $user_id int the ID of the WP User
- * @param $field_name str slug of the WP User meta field
- * @return array a WP_User user meta
  *
- *
- * @throws Exception
  */
 
-//function get_user_meta_callback( $user, $field_name) {
-//    return get_user_meta( $user[ 'id' ], $field_name, true );
-//}
+function getMeasurement($inches) {
 
-//function update_user_meta_callback( $value, $user, $field_name) {
-//    if ( $value === 0 || $value === 'false' || $value === false ) {
-//        return delete_user_meta( $user->ID, $field_name );
-//    }
-//    return update_user_meta( $user->ID, $field_name, $value );
-//}
+    $feet = floor(($inches/12));
+    $inch = round($inches - ($feet*12), 0);
+
+    return [$feet, $inch];
+
+}

@@ -9,14 +9,6 @@
 
 class HOS_User extends WP_User
 {
-    /**
-     *
-     * The class constructor
-     *
-     * @param $user_id int the ID of the WP User
-     * @return $this
-     *
-     **/
 
     private $dateformat_list = [
         'MM/DD/YYYY',
@@ -66,6 +58,105 @@ class HOS_User extends WP_User
         'Telegram' => false,
         'Signal' => false
     ];
+    private $notification_list = [
+        'turn_on' => true,
+        'new_message' => [
+            'label' => 'New Message',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'new_comment' => [
+            'label' => 'New Comment/Reply on Session',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'new_program' => [
+            'label' => 'New Program',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'program_updates' => [
+            'label' => 'Program Updates',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'new_session' => [
+            'label' => 'New Session',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'session_updates' => [
+            'label' => 'Session Updates',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'new_activity' => [
+            'label' => 'New Activity',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'activity_updates' => [
+            'label' => 'Activity Updates',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'Goal_updates' => [
+            'label' => 'Goal Updates',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+        'application_updates' => [
+            'label' => 'Application Updates',
+            'notification' => [
+                'in-app' => false,
+                'e-mail' => false
+            ]
+        ],
+    ];
+    private $gender_list = [
+        'Male',
+        'Female',
+        'Prefer not to Say',
+        'Other'
+    ];
+    private $vitals_list = [
+        'units' => 'imperial',
+        'weight' => [
+            'imperial' => null,
+            'metric' => null
+        ],
+        'height' => [
+            'imperial' => null,
+            'metric' => null
+        ]
+    ];
+
+    /**
+     *
+     * The class constructor
+     *
+     * @param $user_id int the ID of the WP User
+     * @return $this
+     *
+     **/
 
     public function __construct($user_id = false)
     {
@@ -111,14 +202,28 @@ class HOS_User extends WP_User
         return ['user_pass' => $userdata['user_pass'], 'ID' => $this->ID];
     }
 
-    private function get_user_meta( ) {
+    private function get_user_meta() {
         $usermeta = get_user_meta( $this->ID );
+        unset( $usermeta['session_tokens']);
         $usermeta['date_format'] = $this->get_formated_field($usermeta['date_format'][0], $this->dateformat_list);
+        $usermeta['gender'] = $this->get_formated_field($usermeta['gender'][0], $this->gender_list);
         $usermeta['timezonez'] = $this->get_formated_field($usermeta['timezone'][0], $this->timezone_list);
         $usermeta['messenger'] = $this->get_multiple_field($usermeta['messenger'][0], $this->messenger_list);
+
+        if ($usermeta['notification_switcher']) {
+            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0]);
+        } else {
+            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0], false);
+        }
+
+        $usermeta['vitals'] = $this->get_vitals( $usermeta['units'][0], $usermeta['weight'][0], $usermeta['height'][0]);
+//        unset($usermeta['weight']);
+//        unset($usermeta['height']);
+
         return $usermeta;
     }
 
+    // TODO: Review access modifiers
     public function update_user_data( $userdata ) {
         $userdata['ID']  = $this->ID;
         $user_id = wp_update_user( $userdata );
@@ -140,6 +245,38 @@ class HOS_User extends WP_User
             if (array_key_exists( strtolower($key), $usermeta)) {
                 $result[$key] = $usermeta[strtolower($key)];
             }
+        }
+        return $result;
+    }
+
+    public function get_notifications($usermeta, $flag = true) {
+        $result = $this->notification_list;
+        if (!$flag) {
+            $result['turn_on'] = false;
+            return $result;
+        }
+        $usermeta = json_decode($usermeta, true);
+        foreach ($result as $key => $value) {
+            if (array_key_exists( $key, $usermeta)) {
+                foreach ($usermeta[$key] as $item) {
+                    if (isset($result[$key]['notification'][$item])) {
+                        $result[$key]['notification'][$item] = true;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function get_vitals($units, $weight = null, $height= null) {
+        $result = $this->vitals_list;
+        $result['units'] = $units;
+        if ($weight) {
+            $result['weight'] = json_decode($weight, true);
+        }
+        if ($height) {
+            $result['height'] = json_decode($height, true);
+            $result['height']['imperial'] = getMeasurement($result['height']['imperial']);
         }
         return $result;
     }

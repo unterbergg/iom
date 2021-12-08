@@ -20,8 +20,6 @@ add_action( 'rest_api_init', function () {
                 return new WP_Error( 'bad_id' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
             }
 
-            // TODO: update user field(not meta)
-
             $userdata = array(
                 'user_login' => $data['user_email'],
                 'user_email' => $data['user_email'],
@@ -41,6 +39,37 @@ add_action( 'rest_api_init', function () {
 
             $data = array_merge($data, $defaults);
 
+            if ($data['weight']) {
+                $measurement = [];
+                switch ($data['units']) {
+                    case 'imperial' :
+                        $measurement['imperial'] = floatval($data['weight']);
+                        $measurement['metric'] = $data['weight'] / 2.2046;
+                        break;
+                    case 'metric' :
+                        $measurement['metric'] = floatval($data['weight']) ;
+                        $measurement['imperial'] = $data['weight'] * 2.2046;
+                        break;
+                }
+                $data['weight'] = json_encode($measurement);
+            }
+
+            if ($data['height']) {
+                $measurement = [];
+                switch ($data['units']) {
+                    case 'imperial' :
+                        $inches = (json_decode($data['height'])[0]*12) + json_decode($data['height'])[1];
+                        $measurement['imperial'] = $inches;
+                        $measurement['metric'] = $inches * 2.54;
+                        break;
+                    case 'metric' :
+                        $measurement['metric'] = floatval($data['height']) ;
+                        $measurement['imperial'] = $data['height'] / 2.54;
+                        break;
+                }
+                $data['height'] = json_encode($measurement);
+            }
+
             $meta_keys = array(
                 'iom_id',
                 'status',
@@ -52,7 +81,14 @@ add_action( 'rest_api_init', function () {
                 'phone_number',
                 'date_format',
                 'timezone',
-                'messenger'
+                'messenger',
+                'notifications',
+                'notification_switcher',
+                'birthday',
+                'gender',
+                'units',
+                'weight',
+                'height'
             );
 
             foreach ( $meta_keys as $key ) {
