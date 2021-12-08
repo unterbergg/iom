@@ -9,7 +9,7 @@
 add_action( 'rest_api_init', function () {
     register_rest_route(ROUTE_NAMESPACE, '/user/(?P<id>.+)', array(
 
-        'methods' => 'POST',
+        'methods' => 'PUT',
 
         'callback' => function ($data) {
 
