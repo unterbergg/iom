@@ -39,6 +39,8 @@ add_action( 'rest_api_init', function () {
 
             $data = array_merge($data, $defaults);
 
+
+            // TODO: move to functions
             if ($data['weight']) {
                 $measurement = [];
                 switch ($data['units']) {
@@ -54,6 +56,7 @@ add_action( 'rest_api_init', function () {
                 $data['weight'] = json_encode($measurement);
             }
 
+            // TODO: move to functions
             if ($data['height']) {
                 $measurement = [];
                 switch ($data['units']) {
@@ -68,6 +71,19 @@ add_action( 'rest_api_init', function () {
                         break;
                 }
                 $data['height'] = json_encode($measurement);
+            }
+
+            if ($data['bests']) {
+                $bests = json_decode($data['bests'], true);
+                if (isset($bests['strength'])) {
+                    foreach ($bests['strength'] as $key => $value ) {
+                        if (healthos_check_measurement_units($key)) {
+                            $bests['strength'][$key] = healthos_get_strength_units($data['units'], $value);
+                        }
+                    }
+                }
+
+                $data['bests'] = $bests;
             }
 
             $meta_keys = array(
@@ -88,7 +104,8 @@ add_action( 'rest_api_init', function () {
                 'gender',
                 'units',
                 'weight',
-                'height'
+                'height',
+                'bests'
             );
 
             foreach ( $meta_keys as $key ) {

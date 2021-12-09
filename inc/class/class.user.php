@@ -148,6 +148,53 @@ class HOS_User extends WP_User
             'metric' => null
         ]
     ];
+    private $bests_list = [
+        'units' => 'imperial',
+        'run' => [
+            '100M' => null,
+            '200M' => null,
+            '400M' => null,
+            '800M' => null,
+            '5K' => null,
+            '10K' => null,
+            '1 Mile' => null,
+            '5 Mile' => null,
+            '1/2 Marathon' => null,
+            'Marathon' => null
+        ],
+        'bike' => [
+            '5mi' => null,
+            '10mi' => null,
+            '25mi' => null,
+            '50mi' => null,
+            '100mi' => null,
+            '5k' => null,
+            '10k' => null,
+            '25k' => null,
+            '50k' => null,
+            '100k' => null,
+        ],
+        'swim' => [
+            '25m' => null,
+            '50m' => null,
+            '100m' => null,
+            '200m' => null,
+            '400m' => null,
+            '800m' => null,
+        ],
+        'strength' => [
+            //kg
+            'Bench Press' => null,
+            'Squat' => null,
+            'Dead Lift' => null,
+            'OH Press' => null,
+            'Curl' => null,
+            //empty
+            'Pull-ups' => null,
+            'Push-ups' => null,
+            'Sit-ups' => null,
+        ]
+    ];
 
     /**
      *
@@ -263,7 +310,10 @@ class HOS_User extends WP_User
         unset($usermeta['weight']);
         unset($usermeta['height']);
 
-        return $usermeta;
+
+        $usermeta['bests'] = $this->get_bests($usermeta['units'][0], $usermeta['bests'][0]);
+
+        return [$usermeta['bests']];
     }
 
     /**
@@ -374,8 +424,27 @@ class HOS_User extends WP_User
         }
         if ($height) {
             $result['height'] = json_decode($height, true);
-            $result['height']['imperial'] = getMeasurement($result['height']['imperial']);
+            $result['height']['imperial'] = healthos_get_measurement($result['height']['imperial']);
         }
+        return $result;
+    }
+
+    /**
+     *
+     * Get user's bests
+     *
+     * @param $units string units of measurement
+     * @param $weight string JSON weight in both units of measurement
+     * @param $height string JSON height in both units of measurement
+     * @return array $result
+     *
+     **/
+
+    // TODO: Review access modifiers. Add function's return type.
+    public function get_bests($units, $bests = null) {
+        $result = $this->bests_list;
+        $result['units'] = $units;
+        return $bests;
         return $result;
     }
 }
