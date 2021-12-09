@@ -82,8 +82,7 @@ add_action( 'rest_api_init', function () {
                         }
                     }
                 }
-
-                $data['bests'] = $bests;
+                $data['bests'] = json_encode($bests);
             }
 
             $meta_keys = array(

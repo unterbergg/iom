@@ -313,7 +313,7 @@ class HOS_User extends WP_User
 
         $usermeta['bests'] = $this->get_bests($usermeta['units'][0], $usermeta['bests'][0]);
 
-        return [$usermeta['bests']];
+        return $usermeta;
     }
 
     /**
@@ -444,7 +444,8 @@ class HOS_User extends WP_User
     public function get_bests($units, $bests = null) {
         $result = $this->bests_list;
         $result['units'] = $units;
-        return $bests;
+        $bests = json_decode($bests, true);
+        // TODO: FIRSTLY
         return $result;
     }
 }
