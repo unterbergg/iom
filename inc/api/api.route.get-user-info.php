@@ -85,7 +85,6 @@ add_action( 'rest_api_init', function () {
             }
 
             try {
-                // TODO: review this logic
                 $user = healthos_get_user( $data['id'] );
                 $response = $user->get_user_data();
             } catch( Exception $e ) {

@@ -80,13 +80,6 @@ function healthos_check_measurement_units( $key ) {
         'OH Press',
         'Curl'
     ];
-    // TODO: review
-    $empty = [
-        'Pull-ups',
-        'Push-ups',
-        'Sit-ups'
-    ];
-
     return in_array($key, $kg);
-
 }
+

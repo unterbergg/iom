@@ -196,7 +196,8 @@ add_action( 'rest_api_init', function () {
                 ]
             ),
             'profile_photo' => array(
-                'default' => null
+                'default' => null,
+                'description' => __('"wp-json/wp/v2/media" response["source_url"]')
             ),
         )
 
