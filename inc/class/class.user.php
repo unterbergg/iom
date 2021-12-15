@@ -331,6 +331,7 @@ class HOS_User extends WP_User
      *
      **/
 
+    // TODO: Review. Error if data not exist
     private function get_user_meta() {
         $usermeta = get_user_meta( $this->ID );
 
@@ -345,25 +346,25 @@ class HOS_User extends WP_User
         unset( $usermeta['wp_user_level']);
         unset( $usermeta['default_password_nag']);
 
-        $usermeta['date_format'] = $this->get_formatted_field($usermeta['date_format'][0], $this->dateformat_list);
-        $usermeta['gender'] = $this->get_formatted_field($usermeta['gender'][0], $this->gender_list);
-        $usermeta['timezonez'] = $this->get_formatted_field($usermeta['timezone'][0], $this->timezone_list);
-        $usermeta['messenger'] = $this->get_multiple_field($usermeta['messenger'][0], $this->messenger_list);
+        $usermeta['date_format'] = $this->get_formatted_field($usermeta['date_format'][0] ?? "", $this->dateformat_list);
+        $usermeta['gender'] = $this->get_formatted_field($usermeta['gender'][0] ?? "", $this->gender_list);
+        $usermeta['timezonez'] = $this->get_formatted_field($usermeta['timezone'][0] ?? "", $this->timezone_list);
+        $usermeta['messenger'] = $this->get_multiple_field($usermeta['messenger'][0] ?? "", $this->messenger_list);
 
         if ($usermeta['notification_switcher']) {
-            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0]);
+            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0] ?? "");
         } else {
-            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0], false);
+            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0] ?? "", false);
         }
 
-        $usermeta['vitals'] = $this->get_vitals( $usermeta['units'][0], $usermeta['weight'][0], $usermeta['height'][0]);
+        $usermeta['vitals'] = $this->get_vitals( $usermeta['units'][0] ?? "", $usermeta['weight'][0], $usermeta['height'][0]);
         unset($usermeta['weight']);
         unset($usermeta['height']);
 
 
-        $usermeta['bests'] = $this->get_bests($usermeta['units'][0], $usermeta['bests'][0]);
+        $usermeta['bests'] = $this->get_bests($usermeta['units'][0] ?? "", $usermeta['bests'][0]);
 
-        $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0]);
+        $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0] ?? "");
         return $usermeta;
     }
 
@@ -377,7 +378,6 @@ class HOS_User extends WP_User
      * @throws Exception
      **/
 
-    // TODO: Review access modifiers
     public function update_user_data( $userdata ) {
         $userdata['ID']  = $this->ID;
         $user_id = wp_update_user( $userdata );
@@ -388,14 +388,15 @@ class HOS_User extends WP_User
      *
      * Get formatted value of user's meta field
      *
-     * @param $usermeta array value of the field
+     * @param $usermeta string value of the field
      * @param $field array key of the field
      * @return array $result
      *
      **/
 
     // TODO: Review access modifiers. Add function's return type.
-    public function get_formatted_field($usermeta, $field) {
+    private function get_formatted_field(string $usermeta, array $field): array
+    {
         $result = [];
         foreach ($field as $value) {
             $result[$value] = $value == $usermeta;
@@ -407,14 +408,14 @@ class HOS_User extends WP_User
      *
      * Get multiple values of user's meta field
      *
-     * @param $usermeta array value of the field
-     * @param $field array key of the field
+     * @param $usermeta string value of the field
+     * @param $field array list of available values
      * @return array $result
      *
      **/
 
-    // TODO: Review access modifiers. Add function's return type.
-    public function get_multiple_field($usermeta, $field) {
+    private function get_multiple_field(string $usermeta, array $field): array
+    {
         $result = $field;
         $usermeta = json_decode($usermeta, true);
         foreach ($field as $key => $value) {
@@ -429,14 +430,14 @@ class HOS_User extends WP_User
      *
      * Get user's notifications
      *
-     * @param $usermeta array value of the notification field
+     * @param $usermeta string value of the notification field
      * @param $flag bool turn on/turn off notifications
      * @return array $result
      *
      **/
 
-    // TODO: Review access modifiers. Add function's return type.
-    public function get_notifications($usermeta, $flag = true) {
+    private function get_notifications(string $usermeta, bool $flag = true): array
+    {
         $result = $this->notification_list;
         if (!$flag) {
             $result['turn_on'] = false;
@@ -460,14 +461,14 @@ class HOS_User extends WP_User
      * Get user's vitals
      *
      * @param $units string units of measurement
-     * @param $weight string JSON weight in both units of measurement
+     * @param $weight string|null JSON weight in both units of measurement
      * @param $height string JSON height in both units of measurement
      * @return array $result
      *
      **/
 
-    // TODO: Review access modifiers. Add function's return type.
-    public function get_vitals($units, $weight = null, $height= null) {
+    private function get_vitals(string $units, string $weight = "", string $height = ""): array
+    {
         $result = $this->vitals_list;
         $result['units'] = $units;
         if ($weight) {
@@ -485,13 +486,13 @@ class HOS_User extends WP_User
      * Get user's bests
      *
      * @param $units string units of measurement
-     * @param $bests string JSON bests from db
+     * @param $bests string|null JSON bests from db
      * @return array $result
      *
      **/
 
-    // TODO: Review access modifiers. Add function's return type.
-    public function get_bests($units, $bests = null) {
+    private function get_bests(string $units, string $bests = ""): array
+    {
         $result = $this->bests_list;
         $result['units'] = $units;
         $bests = json_decode($bests, true);
@@ -507,13 +508,13 @@ class HOS_User extends WP_User
      *
      * Get user's equipments
      *
-     * @param $eq string JSON equipment from db
+     * @param $eq string|null JSON equipment from db
      * @return array $result
      *
      **/
 
-    // TODO: Review access modifiers. Add function's return type.
-    public function get_equipment($eq = null) {
+    private function get_equipment(string $eq = ""): array
+    {
         $result = $this->equipment_list;
         $equipment = json_decode($eq, true);
         foreach ($equipment as $group => $items) {
