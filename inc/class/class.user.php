@@ -195,6 +195,56 @@ class HOS_User extends WP_User
             'Sit-ups' => null,
         ]
     ];
+    private $equipment_list = [
+        'home' => [
+            'Band' => false,
+            'Suspension Trainer' => false,
+            'BOSU' => false,
+            'Barbell' => false,
+            'Bicycle' => false,
+            'Box/Step' => false,
+            'Cable' => false,
+            'Dumbbell' => false,
+            'Free Weights' => false,
+            'Kettlebell' => false,
+            'Medicine Ball' => false,
+            'Stability Ball' => false,
+            'Stationary Bike' => false,
+            'ViPR® PRO' => false
+        ],
+        'gym' => [
+            'Band' => false,
+            'Suspension Trainer' => false,
+            'BOSU' => false,
+            'Barbell' => false,
+            'Bicycle' => false,
+            'Box/Step' => false,
+            'Cable' => false,
+            'Dumbbell' => false,
+            'Free Weights' => false,
+            'Kettlebell' => false,
+            'Medicine Ball' => false,
+            'Stability Ball' => false,
+            'Stationary Bike' => false,
+            'ViPR® PRO' => false
+        ],
+        'other' => [
+            'Band' => false,
+            'Suspension Trainer' => false,
+            'BOSU' => false,
+            'Barbell' => false,
+            'Bicycle' => false,
+            'Box/Step' => false,
+            'Cable' => false,
+            'Dumbbell' => false,
+            'Free Weights' => false,
+            'Kettlebell' => false,
+            'Medicine Ball' => false,
+            'Stability Ball' => false,
+            'Stationary Bike' => false,
+            'ViPR® PRO' => false
+        ],
+    ];
 
     /**
      *
@@ -313,6 +363,7 @@ class HOS_User extends WP_User
 
         $usermeta['bests'] = $this->get_bests($usermeta['units'][0], $usermeta['bests'][0]);
 
+        $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0]);
         return $usermeta;
     }
 
@@ -434,8 +485,7 @@ class HOS_User extends WP_User
      * Get user's bests
      *
      * @param $units string units of measurement
-     * @param $weight string JSON weight in both units of measurement
-     * @param $height string JSON height in both units of measurement
+     * @param $bests string JSON bests from db
      * @return array $result
      *
      **/
@@ -445,7 +495,32 @@ class HOS_User extends WP_User
         $result = $this->bests_list;
         $result['units'] = $units;
         $bests = json_decode($bests, true);
-        // TODO: FIRSTLY
+        foreach ($bests as $group => $items) {
+            foreach ($items as $key => $item) {
+                $result[$group][$key] = $item;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     *
+     * Get user's equipments
+     *
+     * @param $eq string JSON equipment from db
+     * @return array $result
+     *
+     **/
+
+    // TODO: Review access modifiers. Add function's return type.
+    public function get_equipment($eq = null) {
+        $result = $this->equipment_list;
+        $equipment = json_decode($eq, true);
+        foreach ($equipment as $group => $items) {
+            foreach ($items as $item) {
+                $result[$group][$item] = true;
+            }
+        }
         return $result;
     }
 }

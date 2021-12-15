@@ -104,7 +104,9 @@ add_action( 'rest_api_init', function () {
                 'units',
                 'weight',
                 'height',
-                'bests'
+                'bests',
+                'equipment',
+                'profile_photo'
             );
 
             foreach ( $meta_keys as $key ) {
@@ -124,9 +126,7 @@ add_action( 'rest_api_init', function () {
 
         },
 
-        'permission_callback' => function () {
-            return true;
-        },
+        'permission_callback' => 'is_user_logged_in',
 
         'args' => array(
             'id' => array(
@@ -153,50 +153,50 @@ add_action( 'rest_api_init', function () {
             'timezone' => array(
                 'default' => null,
             ),
-            // TODO: Review
             'date_format' => array(
-                'default' => array(
-                    'MM/DD/YYYY' => false,
-                    'DD/MM/YYYY' => false,
-                    'YYYY/MM/DD' => false
-                )
+                'default' => null
             ),
-            // TODO: Review
-            'date_format' => array(
-                'default' => array(
-                    '(GMT +00:00) GMT' => false,
-                    '(GMT +00:00) UTC' => false,
-                    '(GMT +01:00) ECT' => false,
-                    '(GMT +02:00) EET' => false,
-                    '(GMT +02:00) ART' => false,
-                    '(GMT +03:00) EAT' => false,
-                    '(GMT +03:30) MET' => false,
-                    '(GMT +04:00) NET' => false,
-                    '(GMT +05:00) PLT' => false,
-                    '(GMT +05:30) IST' => false,
-                    '(GMT +06:00) BST' => false,
-                    '(GMT +07:00) VST' => false,
-                    '(GMT +08:00) CTT' => false,
-                    '(GMT +09:00) JST' => false,
-                    '(GMT +09:30) ACT' => false,
-                    '(GMT +10:00) AET' => false,
-                    '(GMT +11:00) SST' => false,
-                    '(GMT +12:00) NST' => false,
-                    '(GMT -11:00) MIT' => false,
-                    '(GMT -10:00) HST' => false,
-                    '(GMT -09:00) AST' => false,
-                    '(GMT -08:00) PST' => false,
-                    '(GMT -07:00) PNT' => false,
-                    '(GMT -07:00) MST' => false,
-                    '(GMT -06:00) CST' => false,
-                    '(GMT -05:00) EST' => false,
-                    '(GMT -05:00) IET' => false,
-                    '(GMT -04:00) PRT' => false,
-                    '(GMT -03:30) CNT' => false,
-                    '(GMT -03:00) AGT' => false,
-                    '(GMT -03:00) BET' => false,
-                    '(GMT -01:00) CAT' => false,
-                )
+            'messenger' => array(
+                'default' => null,
+                'items' => [
+                    'type' => 'array'
+                ]
+            ),
+            'notifications' => array(
+                'default' => null,
+                'items' => [
+                    'type' => 'array'
+                ]
+            ),
+            'notification_switcher' => array(
+                'default' => null
+            ),
+            'birthday' => array(
+                'default' => null
+            ),
+            'gender' => array(
+                'default' => null
+            ),
+            'units' => array(
+                'default' => null
+            ),
+            'weight' => array(
+                'default' => null,
+            ),
+            'height' => array(
+                'default' => null
+            ),
+            'bests' => array(
+                'default' => null,
+            ),
+            'equipment' => array(
+                'default' => null,
+                'items' => [
+                    'type' => 'array'
+                ]
+            ),
+            'profile_photo' => array(
+                'default' => null
             ),
         )
 
