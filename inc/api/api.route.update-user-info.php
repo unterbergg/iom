@@ -110,10 +110,8 @@ add_action( 'rest_api_init', function () {
             );
 
             foreach ( $meta_keys as $key ) {
-                if ( array_key_exists( $key, $data ) ) {
+                if ( array_key_exists( $key, $data ) && $data['key'] ) {
                     update_user_meta( $user->ID, $key, $data[$key] );
-                } else {
-                    delete_user_meta( $user->ID, $key );
                 }
             }
 
