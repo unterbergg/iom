@@ -357,13 +357,14 @@ class HOS_User extends WP_User
             $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0] ?? "", false);
         }
 
-        $usermeta['vitals'] = $this->get_vitals( $usermeta['units'][0] ?? "", $usermeta['weight'][0], $usermeta['height'][0]);
-        unset($usermeta['weight']);
-        unset($usermeta['height']);
-
-
-        $usermeta['bests'] = $this->get_bests($usermeta['units'][0] ?? "", $usermeta['bests'][0]);
-
+        if (isset($usermeta['weight']) && isset($usermeta['units']) && isset($usermeta['weight'])) {
+            $usermeta['vitals'] = $this->get_vitals($usermeta['units'][0] ?? "", $usermeta['weight'][0], $usermeta['height'][0]);
+            unset($usermeta['weight']);
+            unset($usermeta['height']);
+        }
+        if (isset($usermeta['bests']) && isset($usermeta['units'])) {
+            $usermeta['bests'] = $this->get_bests($usermeta['units'][0] ?? "", $usermeta['bests'][0]);
+        }
         $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0] ?? "");
         return $usermeta;
     }
