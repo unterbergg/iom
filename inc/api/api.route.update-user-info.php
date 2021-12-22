@@ -110,7 +110,8 @@ add_action( 'rest_api_init', function () {
             );
 
             foreach ( $meta_keys as $key ) {
-                if ( array_key_exists( $key, $data ) && $data['key'] ) {
+
+                if ( array_key_exists( $key, $data ) && $data[$key] ) {
                     update_user_meta( $user->ID, $key, $data[$key] );
                 }
             }
@@ -124,7 +125,10 @@ add_action( 'rest_api_init', function () {
 
         },
 
-        'permission_callback' => 'is_user_logged_in',
+        /*'permission_callback' => 'is_user_logged_in',*/
+        'permission_calback' => function () {
+            return true;
+        },
 
         'args' => array(
             'id' => array(
