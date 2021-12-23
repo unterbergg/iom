@@ -99,7 +99,9 @@ add_action( 'rest_api_init', function () {
 
         },
 
-        'permission_callback' => 'is_user_logged_in',
-
+//        'permission_callback' => 'is_user_logged_in',
+        'permission_calback' => function () {
+            return true;
+        },
     ));
 });
