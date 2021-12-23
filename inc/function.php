@@ -6,6 +6,21 @@ define( 'ROUTE_NAMESPACE', apply_filters( 'healthos_route_namespace' , 'healthos
  * Get a user
  *
  * @param $user_id int the ID of the WP User
+ * @return obj a HOS_Session user object
+ *
+ *
+ * @throws Exception
+ */
+
+function healthos_get_session( $user_id = false ) {
+    return new HOS_Session( $user_id );
+}
+
+/**
+ *
+ * Get a program
+ *
+ * @param $user_id int the ID of the WP User
  * @return obj a HOS_User user object
  *
  *

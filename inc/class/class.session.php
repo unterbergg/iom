@@ -1,10 +1,10 @@
 <?php
 /**
  *
- * Class to handle program related user
+ * Class to handle session related user
  *
  **/
-class HOS_Program {
+class HOS_Session {
 
     /**
      *
@@ -19,7 +19,7 @@ class HOS_Program {
     {
 
         if ( !$user_id || !is_numeric($user_id) ) {
-            throw new Exception(__('You must provide a $user_id to initiate a HOS_User object.', 'healthos'));
+            throw new Exception(__('You must provide a $user_id to initiate a HOS_Session object.', 'healthos'));
         }
         parent::__construct($user_id);
 
