@@ -1,4 +1,6 @@
 <?php
+
+
 /**
  *
  * Class to handle user related actions
