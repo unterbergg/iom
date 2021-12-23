@@ -435,24 +435,24 @@ class HOS_User extends WP_User
      *
      **/
 
-    private function get_notifications(string $usermeta, bool $flag = true): array
+    private function get_notifications(string $usermeta, bool $flag = true)
     {
-        $result = $this->notification_list;
+//        $result = $this->notification_list;
         if (!$flag) {
             $result['turn_on'] = false;
-            return $result;
+//            return json_decode($usermeta);
         }
-        $usermeta = json_decode($usermeta, true);
-        foreach ($result as $key => $value) {
-            if (array_key_exists( $key, $usermeta)) {
-                foreach ($usermeta[$key] as $item) {
-                    if (isset($result[$key]['notification'][$item])) {
-                        $result[$key]['notification'][$item] = true;
-                    }
-                }
-            }
-        }
-        return $result;
+//        $usermeta = json_decode($usermeta, true);
+//        foreach ($result as $key => $value) {
+//            if (array_key_exists( $key, $usermeta)) {
+//                foreach ($usermeta[$key] as $item) {
+//                    if (isset($result[$key]['notification'][$item])) {
+//                        $result[$key]['notification'][$item] = true;
+//                    }
+//                }
+//            }
+//        }
+        return json_decode($usermeta);
     }
 
     /**

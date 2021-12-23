@@ -109,6 +109,8 @@ add_action( 'rest_api_init', function () {
                 'profile_photo'
             );
 
+//            return json_decode($data['notifications']);
+
             foreach ( $meta_keys as $key ) {
 
                 if ( array_key_exists( $key, $data ) && $data[$key] ) {
