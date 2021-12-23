@@ -348,7 +348,7 @@ class HOS_User extends WP_User
 
         $usermeta['date_format'] = $this->get_formatted_field($usermeta['date_format'][0] ?? "", $this->dateformat_list);
         $usermeta['gender'] = $this->get_formatted_field($usermeta['gender'][0] ?? "", $this->gender_list);
-        $usermeta['timezonez'] = $this->get_formatted_field($usermeta['timezone'][0] ?? "", $this->timezone_list);
+        $usermeta['timezone'] = $this->get_formatted_field($usermeta['timezone'][0] ?? "", $this->timezone_list);
         $usermeta['messenger'] = $this->get_multiple_field($usermeta['messenger'][0] ?? "", $this->messenger_list);
 
         if ($usermeta['notification_switcher']) {
