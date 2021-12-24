@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  *
  * Class to handle user related actions
@@ -418,7 +416,7 @@ class HOS_User extends WP_User
     private function get_multiple_field(string $usermeta, array $field): array
     {
         $result = $field;
-        $usermeta = json_decode($usermeta, true);
+        $usermeta = unserialize($usermeta);
         foreach ($field as $key => $value) {
             if (array_key_exists( strtolower($key), $usermeta)) {
                 $result[$key] = $usermeta[strtolower($key)];
@@ -437,24 +435,23 @@ class HOS_User extends WP_User
      *
      **/
 
-    private function get_notifications(string $usermeta, bool $flag = true)
+    private function get_notifications(string $usermeta, bool $flag = true): array
     {
-//        $result = $this->notification_list;
+        $result = $this->notification_list;
         if (!$flag) {
             $result['turn_on'] = false;
-//            return json_decode($usermeta);
+            return $result;
         }
-//        $usermeta = json_decode($usermeta, true);
-//        foreach ($result as $key => $value) {
-//            if (array_key_exists( $key, $usermeta)) {
-//                foreach ($usermeta[$key] as $item) {
-//                    if (isset($result[$key]['notification'][$item])) {
-//                        $result[$key]['notification'][$item] = true;
-//                    }
-//                }
-//            }
-//        }
-        return json_decode($usermeta);
+        foreach ($result as $key => $value) {
+            if (array_key_exists( $key, unserialize($usermeta))) {
+                foreach (unserialize($usermeta)[$key] as $item) {
+                    if (isset($result[$key]['notification'][$item])) {
+                        $result[$key]['notification'][$item] = true;
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     /**
@@ -496,7 +493,7 @@ class HOS_User extends WP_User
     {
         $result = $this->bests_list;
         $result['units'] = $units;
-        $bests = json_decode($bests, true);
+        $bests = unserialize($bests);
         foreach ($bests as $group => $items) {
             foreach ($items as $key => $item) {
                 $result[$group][$key] = $item;
@@ -517,7 +514,7 @@ class HOS_User extends WP_User
     private function get_equipment(string $eq = ""): array
     {
         $result = $this->equipment_list;
-        $equipment = json_decode($eq, true);
+        $equipment = unserialize($eq);
         foreach ($equipment as $group => $items) {
             foreach ($items as $item) {
                 $result[$group][$item] = true;

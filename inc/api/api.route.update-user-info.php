@@ -9,7 +9,7 @@
 add_action( 'rest_api_init', function () {
     register_rest_route(ROUTE_NAMESPACE, '/user/(?P<id>.+)', array(
 
-        'methods' => 'PUT',
+        'methods' => 'POST',
 
         'callback' => function ($data) {
 
@@ -39,7 +39,7 @@ add_action( 'rest_api_init', function () {
 
             $data = array_merge($data, $defaults);
 
-
+//            var_dump($data['notifications']);
             // TODO: move to functions
             if ($data['weight']) {
                 $measurement = [];
