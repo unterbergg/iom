@@ -83,3 +83,43 @@ function healthos_check_measurement_units( $key ) {
     return in_array($key, $kg);
 }
 
+
+//TODO: Add descriptions
+
+add_action( 'rest_api_init', 'create_api_posts_meta_field' );
+
+function create_api_posts_meta_field() {
+    register_rest_field( 'active_workout', 'meta', array(
+            'get_callback' => 'get_post_meta_for_api',
+            'schema' => null,
+        )
+    );
+}
+
+function get_post_meta_for_api( $object ) {
+    //get the id of the post object array
+    $post_id = $object['id'];
+
+    $metaval = get_post_meta( $post_id );
+
+    foreach ($metaval as &$date) {
+        $date = unserialize($date[0]);
+    }
+    //return the post meta
+    return $metaval;
+}
+
+if (!function_exists('post_meta_rest_api_request')) {
+    function post_meta_rest_api_request($argu, $request)
+    {
+
+        $argu += array(
+            'meta_key' => $request['meta_key'],
+            'meta_value' => $request['meta_value']
+        );
+
+        return $argu;
+    }
+
+    add_filter('rest_active_workout_query', 'post_meta_rest_api_request', 99, 2);
+}
