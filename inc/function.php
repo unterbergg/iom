@@ -92,7 +92,7 @@ if (!function_exists('healthos_create_api_posts_meta_field')) {
     function healthos_create_api_posts_meta_field()
     {
         register_rest_field('active_workout', 'meta', array(
-                'get_callback' => 'get_post_meta_for_api',
+                'get_callback' => 'healthos_get_post_meta_for_api',
                 'schema' => null,
             )
         );
@@ -128,3 +128,19 @@ if (!function_exists('healthos_post_meta_rest_api_request')) {
 
     add_filter('rest_active_workout_query', 'healthos_post_meta_rest_api_request', 99, 2);
 }
+
+/**
+ *   Do something when a new schedule is created
+ */
+function new_schedule($post_id, $post, $update) {
+    if ($post->post_type == 'active_workout' && $post->post_status == 'publish' && empty(get_post_meta( $post_id, 'check_if_run_once' ))) {
+        # New Post
+
+        $user_id = explode("-", $post->post_name);
+        var_dump($user_id);
+        # And update the meta so it won't run again
+
+        var_dump(update_post_meta( $post_id, '_user', $user_id[0]));
+    }
+}
+add_action( 'wp_insert_post', 'new_schedule', 10, 3 );
