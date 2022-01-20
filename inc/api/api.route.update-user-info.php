@@ -53,7 +53,7 @@ add_action( 'rest_api_init', function () {
                         $measurement['imperial'] = $data['weight'] * 2.2046;
                         break;
                 }
-                $data['weight'] = json_encode($measurement);
+                $data['weight'] = $measurement;
             }
 
             // TODO: move to functions
@@ -70,7 +70,7 @@ add_action( 'rest_api_init', function () {
                         $measurement['imperial'] = $data['height'] / 2.54;
                         break;
                 }
-                $data['height'] = json_encode($measurement);
+                $data['height'] = $measurement;
             }
 
             if ($data['bests']) {
@@ -84,7 +84,7 @@ add_action( 'rest_api_init', function () {
                 }
                 $data['bests'] = $bests;
             }
-
+            $data['notification_switcher'] = json_encode($data['notification_switcher']);
             $meta_keys = array(
                 'iom_id',
                 'status',
@@ -108,13 +108,9 @@ add_action( 'rest_api_init', function () {
                 'equipment',
                 'profile_photo'
             );
-
-//            return json_decode($data['notifications']);
-
             foreach ( $meta_keys as $key ) {
-
                 if ( array_key_exists( $key, $data ) && $data[$key] ) {
-                    update_user_meta( $user->ID, $key, $data[$key] );
+                    update_user_meta($user->ID, $key, $data[$key]);
                 }
             }
 

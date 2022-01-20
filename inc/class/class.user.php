@@ -57,7 +57,7 @@ class HOS_User extends WP_User
         'Signal' => false
     ];
     private $notification_list = [
-        'turn_on' => true,
+        'disabled' => false,
         'new_message' => [
             'label' => 'New Message',
             'notification' => [
@@ -349,14 +349,12 @@ class HOS_User extends WP_User
         $usermeta['timezone'] = $this->get_formatted_field($usermeta['timezone'][0] ?? "", $this->timezone_list);
         $usermeta['messenger'] = $this->get_multiple_field($usermeta['messenger'][0] ?? "", $this->messenger_list);
 
-        if ($usermeta['notification_switcher']) {
-            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0] ?? "");
-        } else {
-            $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0] ?? "", false);
-        }
 
-        if (isset($usermeta['weight']) && isset($usermeta['units']) && isset($usermeta['weight'])) {
-            $usermeta['vitals'] = $this->get_vitals($usermeta['units'][0] ?? "", $usermeta['weight'][0], $usermeta['height'][0]);
+        $usermeta['notifications'] = $this->get_notifications($usermeta['notifications'][0] ?? "", json_decode($usermeta['notification_switcher'][0]) ?? false);
+        
+        if (isset($usermeta['units']) && (isset($usermeta['weight']) || isset($usermeta['height']))) {
+
+            $usermeta['vitals'] = $this->get_vitals($usermeta['units'][0], $usermeta['weight'][0] ?? "", $usermeta['height'][0] ?? "");
             unset($usermeta['weight']);
             unset($usermeta['height']);
         }
@@ -364,7 +362,7 @@ class HOS_User extends WP_User
             $usermeta['bests'] = $this->get_bests($usermeta['units'][0] ?? "", $usermeta['bests'][0]);
         }
         $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0] ?? "");
-        return [$usermeta['bests']];
+        return $usermeta;
     }
 
     /**
@@ -435,13 +433,10 @@ class HOS_User extends WP_User
      *
      **/
 
-    private function get_notifications(string $usermeta, bool $flag = true): array
+    private function get_notifications(string $usermeta, bool $flag): array
     {
         $result = $this->notification_list;
-        if (!$flag) {
-            $result['turn_on'] = false;
-            return $result;
-        }
+        $result['disabled'] = $flag;
         foreach ($result as $key => $value) {
             if (array_key_exists( $key, unserialize($usermeta))) {
                 foreach (unserialize($usermeta)[$key] as $item) {
@@ -470,10 +465,10 @@ class HOS_User extends WP_User
         $result = $this->vitals_list;
         $result['units'] = $units;
         if ($weight) {
-            $result['weight'] = json_decode($weight, true);
+            $result['weight'] = unserialize($weight);
         }
         if ($height) {
-            $result['height'] = json_decode($height, true);
+            $result['height'] = unserialize($height);
             $result['height']['imperial'] = healthos_get_measurement($result['height']['imperial']);
         }
         return $result;
