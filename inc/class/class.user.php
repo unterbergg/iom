@@ -364,7 +364,7 @@ class HOS_User extends WP_User
             $usermeta['bests'] = $this->get_bests($usermeta['units'][0] ?? "", $usermeta['bests'][0]);
         }
         $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0] ?? "");
-        return $usermeta;
+        return [$usermeta['bests']];
     }
 
     /**
@@ -496,7 +496,7 @@ class HOS_User extends WP_User
         $bests = unserialize($bests);
         foreach ($bests as $group => $items) {
             foreach ($items as $key => $item) {
-                $result[$group][$key] = $item;
+                $result[strtolower($group)][$key] = $item;
             }
         }
         return $result;

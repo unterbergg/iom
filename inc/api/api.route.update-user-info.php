@@ -74,7 +74,7 @@ add_action( 'rest_api_init', function () {
             }
 
             if ($data['bests']) {
-                $bests = json_decode($data['bests'], true);
+                $bests = $data['bests'];
                 if (isset($bests['strength'])) {
                     foreach ($bests['strength'] as $key => $value ) {
                         if (healthos_check_measurement_units($key)) {
@@ -82,7 +82,7 @@ add_action( 'rest_api_init', function () {
                         }
                     }
                 }
-                $data['bests'] = json_encode($bests);
+                $data['bests'] = $bests;
             }
 
             $meta_keys = array(

@@ -107,8 +107,10 @@ if (!function_exists('healthos_get_post_meta_for_api')) {
 
         $metaval = get_post_meta($post_id);
 
-        foreach ($metaval as &$date) {
-            $date = unserialize($date[0]);
+        foreach ($metaval as $key => &$date) {
+            if($key != "_user" && $key != "_program") {
+                $date = unserialize($date[0]);
+            }
         }
         //return the post meta
         return $metaval;
@@ -137,10 +139,10 @@ function new_schedule($post_id, $post, $update) {
         # New Post
 
         $user_id = explode("-", $post->post_name);
-        var_dump($user_id);
         # And update the meta so it won't run again
 
-        var_dump(update_post_meta( $post_id, '_user', $user_id[0]));
+        update_post_meta( $post_id, '_user', $user_id[0]);
+        update_post_meta( $post_id, '_program', $user_id[1]);
     }
 }
 add_action( 'wp_insert_post', 'new_schedule', 10, 3 );
