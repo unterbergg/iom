@@ -22,4 +22,4 @@ jobs:
       - run: chmod 644 ~/.ssh/wpekey.pub
       - run: ssh-keyscan -t rsa "$WPENGINE_ENVIRONMENT_NAME.ssh.wpengine.net" >> ~/.ssh/known_hosts
       # PUSH
-      - run: rsync --itemize-changes -av -e "ssh -i ~/.ssh/wpekey" $GITHUB_WORKSPACE/ ${WPENGINE_ENVIRONMENT_NAME}@${WPENGINE_ENVIRONMENT_NAME}.ssh.wpengine.net:/home/wpe-user/sites/$WPENGINE_ENVIRONMENT_NAME/
+      - run: rsync --itemize-changes -av -e "ssh -i ~/.ssh/wpekey" $GITHUB_WORKSPACE/ ${WPENGINE_ENVIRONMENT_NAME}@${WPENGINE_ENVIRONMENT_NAME}.ssh.wpengine.net:/home/wpe-user/sites/$WPENGINE_ENVIRONMENT_NAME/wp-content/plugins/iom-rest-api/
