@@ -39,7 +39,6 @@ add_action( 'rest_api_init', function () {
 
             $data = array_merge($data, $defaults);
 
-//            var_dump($data['notifications']);
             // TODO: move to functions
             if ($data['weight']) {
                 $measurement = [];
@@ -57,17 +56,17 @@ add_action( 'rest_api_init', function () {
             }
 
             // TODO: move to functions
-            if ($data['height']) {
+            if (isset($data['heightMetric']) || isset($data['heightFoot']) || isset($data['heightInch'])) {
                 $measurement = [];
                 switch ($data['units']) {
                     case 'imperial' :
-                        $inches = (json_decode($data['height'])[0]*12) + json_decode($data['height'])[1];
+                        $inches = (json_decode($data['heightFoot'])*12) + json_decode($data['heightInch']);
                         $measurement['imperial'] = $inches;
                         $measurement['metric'] = $inches * 2.54;
                         break;
                     case 'metric' :
-                        $measurement['metric'] = floatval($data['height']) ;
-                        $measurement['imperial'] = $data['height'] / 2.54;
+                        $measurement['metric'] = floatval($data['heightMetric']) ;
+                        $measurement['imperial'] = $data['heightMetric'] / 2.54;
                         break;
                 }
                 $data['height'] = $measurement;

@@ -362,7 +362,7 @@ class HOS_User extends WP_User
             $usermeta['bests'] = $this->get_bests($usermeta['units'][0] ?? "", $usermeta['bests'][0]);
         }
         $usermeta['equipment'] = $this->get_equipment($usermeta['equipment'][0] ?? "");
-        return $usermeta;
+        return [$usermeta['messenger']];
     }
 
     /**
@@ -416,8 +416,8 @@ class HOS_User extends WP_User
         $result = $field;
         $usermeta = unserialize($usermeta);
         foreach ($field as $key => $value) {
-            if (array_key_exists( strtolower($key), $usermeta)) {
-                $result[$key] = $usermeta[strtolower($key)];
+            if (array_key_exists( $key, $usermeta)) {
+                $result[$key] = $usermeta[$key];
             }
         }
         return $result;
