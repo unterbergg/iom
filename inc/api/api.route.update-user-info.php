@@ -55,7 +55,6 @@ add_action( 'rest_api_init', function () {
                 $data['weight'] = $measurement;
             }
 
-            // TODO: move to functions
             if (isset($data['heightMetric']) || isset($data['heightFoot']) || isset($data['heightInch'])) {
                 $measurement = [];
                 switch ($data['units']) {
