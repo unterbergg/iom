@@ -45,21 +45,11 @@ add_action( 'rest_api_init', function () {
         },
 
         'args' => array(
-            'email' => array(
-                'validate_callback' => function($param, $request, $key) {
-                    return $param;
-                }
-            ),
             'password' => array(
                 'validate_callback' => function($param, $request, $key) {
                     return $param;
                 }
             ),
-            'new_password' => array(
-                'validate_callback' => function($param, $request, $key) {
-                    return $param;
-                }
-            )
         )
 
     ));
