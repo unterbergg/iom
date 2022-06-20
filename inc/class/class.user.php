@@ -339,7 +339,6 @@ class HOS_User extends WP_User
     public function set_new_password( $password ) {
 
         $password = trim( wp_unslash( $password ) );
-
         return wp_set_password( $password , $this->ID );
 
     }
