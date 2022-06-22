@@ -106,8 +106,12 @@ add_action( 'rest_api_init', function () {
                 'equipment',
                 'profile_photo'
             );
+
             foreach ( $meta_keys as $key ) {
                 if ( array_key_exists( $key, $data ) && $data[$key] ) {
+                    if ($key == 'notifications' && ($data['notification_switcher'] == 'true' || $data['notification_switcher'] == 'false')) {
+                        continue;
+                    }
                     update_user_meta($user->ID, $key, $data[$key]);
                 }
             }
