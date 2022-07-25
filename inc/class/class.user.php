@@ -164,34 +164,6 @@ class HOS_User extends WP_User
                 'e-mail' => false
             ]
         ],
-        'new_activity' => [
-            'label' => 'New Activity',
-            'notification' => [
-                'in-app' => false,
-                'e-mail' => false
-            ]
-        ],
-        'activity_updates' => [
-            'label' => 'Activity Updates',
-            'notification' => [
-                'in-app' => false,
-                'e-mail' => false
-            ]
-        ],
-        'Goal_updates' => [
-            'label' => 'Goal Updates',
-            'notification' => [
-                'in-app' => false,
-                'e-mail' => false
-            ]
-        ],
-        'application_updates' => [
-            'label' => 'Application Updates',
-            'notification' => [
-                'in-app' => false,
-                'e-mail' => false
-            ]
-        ],
     ];
     private $gender_list = [
         'Male',
