@@ -13,20 +13,34 @@ add_action( 'rest_api_init', function () {
 
         'callback' => function( $data ) {
 
+            if ( empty( $data['email'] ) || $data['email'] === '' ) {
+                return new WP_Error( 'no_email' , __( 'You Must Provide an Email Address.' , 'healthos' ) , array( 'status' => 400 ));
+            }
+
             if( empty( $data['password'] ) || $data['password'] === '' ) {
+                return new WP_Error( 'no_code' , __( 'You Must Provide a Password.' , 'healthos' ) , array( 'status' => 400 ) );
+            }
+
+            if( empty( $data['new_password'] ) || $data['new_password'] === '' ) {
                 return new WP_Error( 'no_code' , __( 'You Must Provide a New Password.' , 'healthos' ) , array( 'status' => 400 ) );
             }
 
-            $exists = wp_get_current_user();
+            $exists = email_exists( $data['email'] );
 
             if( ! $exists ) {
                 return new WP_Error( 'bad_email' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
             }
 
-            try {
-                $user = healthos_get_user( $exists->ID );
-                $user->set_new_password( $data['password'] );
 
+            try {
+                $user = healthos_get_user( $exists );
+                $userdata = $user->get_user_pass();
+                $passValidate = wp_check_password( $data['password'], $userdata['user_pass'], $userdata['ID'] );
+                if ($passValidate) {
+                    $user->set_new_password( $data['new_password'] );
+                } else {
+                    return new WP_Error( 'bad_password' , __( 'Incorrect Password.' , 'healthos' ) , array( 'status' => 500 ));
+                }
             } catch( Exception $e ) {
                 return new WP_Error( 'bad_request' , $e->getMessage() , array( 'status' => 500 ));
             }
@@ -45,11 +59,21 @@ add_action( 'rest_api_init', function () {
         },
 
         'args' => array(
+            'email' => array(
+                'validate_callback' => function($param, $request, $key) {
+                    return $param;
+                }
+            ),
             'password' => array(
                 'validate_callback' => function($param, $request, $key) {
                     return $param;
                 }
             ),
+            'new_password' => array(
+                'validate_callback' => function($param, $request, $key) {
+                    return $param;
+                }
+            )
         )
 
     ));
