@@ -1,41 +1,6 @@
 <?php
 /**
  *
- *
- *
- */
-
-/*add_action( 'rest_api_init', function () {
-    $user_keys = array(
-        'iom_id' => 'integer',
-        'status' => 'string',
-        'subscription_id' => 'integer',
-        'expiration_date' => 'integer',
-        'ld_group' => 'integer',
-        'user_group' => 'integer',
-        'user_parent' => 'integer',
-        'user_new' => 'integer',
-    );
-
-    foreach ( $user_keys as $key => $type ) {
-        register_rest_field (
-            'user',
-            $key,
-            array(
-                'get_callback'    => 'get_user_meta_callback',
-                'update_callback' => 'update_user_meta_callback',
-                'schema'          => array(
-                    'description' => __( 'user meta' ),
-                    'type'        => $type
-                ),
-            )
-        );
-    }
-} );*/
-
-
-/**
- *
  * Add an endpoint to get user info
  *
  **/
@@ -86,12 +51,9 @@ add_action( 'rest_api_init', function () {
 
             try {
                 $user = healthos_get_user( $data['id'] );
-                if( ! $user ) {
-                    return new WP_Error( 'bad_id' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
-                }
                 $response = $user->get_user_data();
             } catch( Exception $e ) {
-                return new WP_Error( 'bad_request' , $e->getMessage() , array( 'status' => 500 ));
+                return new WP_Error( 'bad_id' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
             }
 
             if ( is_array( $response ) ) {
@@ -102,9 +64,9 @@ add_action( 'rest_api_init', function () {
 
         },
 
-        'permission_callback' => function() {
+//        'permission_callback' => 'is_user_logged_in',
+        'permission_calback' => function () {
             return true;
         },
-
     ));
 });

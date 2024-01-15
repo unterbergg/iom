@@ -14,17 +14,23 @@ add_action( 'rest_api_init', function () {
         'callback' => function ($data) {
 
             $data = $data->get_params();
-
             $user = healthos_get_user( $data['id'] );
 
             if( ! $user ) {
                 return new WP_Error( 'bad_id' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
             }
 
-            // TODO: update user field(not meta)
-            if ($data['user_email']) {
-                $data['user_login'] = $data['user_email'];
-            }
+            $userdata = array(
+                'user_login' => $data['user_email'],
+                'user_email' => $data['user_email'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'display_name' => $data['display_name'],
+            );
+
+            $userdata['display_name'] = $data['display_name'] ?? $data['first_name'] . " " . $data['last_name'];
+
+            $user = $user->update_user_data($userdata);
 
             $defaults = array(
                 'user_group' => 3830,
@@ -33,6 +39,50 @@ add_action( 'rest_api_init', function () {
 
             $data = array_merge($data, $defaults);
 
+            // TODO: move to functions
+            if ($data['weight']) {
+                $measurement = [];
+                switch ($data['units']) {
+                    case 'imperial' :
+                        $measurement['imperial'] = floatval($data['weight']);
+                        $measurement['metric'] = $data['weight'] / 2.2046;
+                        break;
+                    case 'metric' :
+                        $measurement['metric'] = floatval($data['weight']) ;
+                        $measurement['imperial'] = $data['weight'] * 2.2046;
+                        break;
+                }
+                $data['weight'] = $measurement;
+            }
+
+            if (isset($data['heightMetric']) || isset($data['heightFoot']) || isset($data['heightInch'])) {
+                $measurement = [];
+                switch ($data['units']) {
+                    case 'imperial' :
+                        $inches = (json_decode($data['heightFoot'])*12) + json_decode($data['heightInch']);
+                        $measurement['imperial'] = $inches;
+                        $measurement['metric'] = $inches * 2.54;
+                        break;
+                    case 'metric' :
+                        $measurement['metric'] = floatval($data['heightMetric']) ;
+                        $measurement['imperial'] = $data['heightMetric'] / 2.54;
+                        break;
+                }
+                $data['height'] = $measurement;
+            }
+
+            if ($data['bests']) {
+                $bests = $data['bests'];
+                if (isset($bests['strength'])) {
+                    foreach ($bests['strength'] as $key => $value ) {
+                        if (healthos_check_measurement_units($key)) {
+                            $bests['strength'][$key] = healthos_get_strength_units($data['units'], $value);
+                        }
+                    }
+                }
+                $data['bests'] = $bests;
+            }
+            $data['notification_switcher'] = json_encode($data['notification_switcher']);
             $meta_keys = array(
                 'iom_id',
                 'status',
@@ -41,14 +91,28 @@ add_action( 'rest_api_init', function () {
                 'ld_group',
                 'user_group',
                 'user_parent',
-                'phone_number'
+                'phone_number',
+                'date_format',
+                'timezone',
+                'messenger',
+                'notifications',
+                'notification_switcher',
+                'birthday',
+                'gender',
+                'units',
+                'weight',
+                'height',
+                'bests',
+                'equipment',
+                'profile_photo'
             );
 
             foreach ( $meta_keys as $key ) {
-                if ( array_key_exists( $key, $data ) ) {
-                    update_user_meta( $user->ID, $key, $data[$key] );
-                } else {
-                    delete_user_meta( $user->ID, $key );
+                if ( array_key_exists( $key, $data ) && $data[$key] ) {
+                    if ($key == 'notifications' && ($data['notification_switcher'] == 'true' || $data['notification_switcher'] == 'false')) {
+                        continue;
+                    }
+                    update_user_meta($user->ID, $key, $data[$key]);
                 }
             }
 
@@ -61,7 +125,8 @@ add_action( 'rest_api_init', function () {
 
         },
 
-        'permission_callback' => function () {
+        /*'permission_callback' => 'is_user_logged_in',*/
+        'permission_calback' => function () {
             return true;
         },
 
@@ -91,12 +156,51 @@ add_action( 'rest_api_init', function () {
                 'default' => null,
             ),
             'date_format' => array(
-                'default' => array(
-                    'key1' => 'value1',
-                    'key2' => 'value2',
-                    'key3' => 'value3'
-                )
-            )
+                'default' => null
+            ),
+            'messenger' => array(
+                'default' => null,
+                'items' => [
+                    'type' => 'array'
+                ]
+            ),
+            'notifications' => array(
+                'default' => null,
+                'items' => [
+                    'type' => 'array'
+                ]
+            ),
+            'notification_switcher' => array(
+                'default' => null
+            ),
+            'birthday' => array(
+                'default' => null
+            ),
+            'gender' => array(
+                'default' => null
+            ),
+            'units' => array(
+                'default' => null
+            ),
+            'weight' => array(
+                'default' => null,
+            ),
+            'height' => array(
+                'default' => null
+            ),
+            'bests' => array(
+                'default' => null,
+            ),
+            'equipment' => array(
+                'default' => null,
+                'items' => [
+                    'type' => 'array'
+                ]
+            ),
+            'profile_photo' => array(
+                'default' => null,
+                'description' => __('"wp-json/wp/v2/media" response["source_url"]')
+            ),
         )
 
     ));

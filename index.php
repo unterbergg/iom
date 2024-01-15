@@ -14,10 +14,6 @@
  *
  **/
 
-/**
- * Add meta fields
- */
-//include_once( __DIR__ . '/inc/acf.php' );
 
 /**
  *

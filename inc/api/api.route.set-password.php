@@ -31,12 +31,13 @@ add_action( 'rest_api_init', function () {
                 return new WP_Error( 'bad_email' , __( 'No User Found.' , 'healthos' ) , array( 'status' => 404 ));
             }
 
+
             try {
                 $user = healthos_get_user( $exists );
                 $userdata = $user->get_user_pass();
                 $passValidate = wp_check_password( $data['password'], $userdata['user_pass'], $userdata['ID'] );
                 if ($passValidate) {
-                    $user->set_new_password( $data['password'] );
+                    $user->set_new_password( $data['new_password'] );
                 } else {
                     return new WP_Error( 'bad_password' , __( 'Incorrect Password.' , 'healthos' ) , array( 'status' => 500 ));
                 }
